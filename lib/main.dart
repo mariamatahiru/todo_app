@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/utils.dart';
 
 import 'home_view.dart';
 
@@ -18,13 +19,13 @@ class MyApp extends StatelessWidget {
         appBarTheme: AppBarTheme(
          backgroundColor: Colors.white,
        iconTheme: IconThemeData(color:Colors.blue),
-     titleTextStyle: TextStyle(color: Colors.blue,fontWeight: FontWeight.w600,fontSize: 25)
+     titleTextStyle: TextStyle(color:CostomBlue,fontWeight: FontWeight.w600,fontSize: 25)
         )
       ),
       darkTheme: ThemeData(
        appBarTheme: AppBarTheme(
         backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color:CostomBlue),
         titleTextStyle: TextStyle(color: Colors.white,fontWeight: FontWeight.w600,fontSize: 25)
        ),
        
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
        ),
   
     
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       home: HomeView(),
     );
   } 
