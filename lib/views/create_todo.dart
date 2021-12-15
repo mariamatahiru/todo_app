@@ -2,6 +2,8 @@ import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:todo_app/utils.dart';
+import 'package:todo_app/controllers/todo_controller.dart';
+import 'package:intl/intl.dart';
 
 class CreateTodoView extends StatefulWidget {
   const CreateTodoView({ Key? key }) : super(key: key);
@@ -11,6 +13,12 @@ class CreateTodoView extends StatefulWidget {
 }
 
 class _CreateTodoViewState extends State<CreateTodoView> {
+  final TextEditingController _titleController =TextEditingController();
+  final TextEditingController _descriptionController  =TextEditingController();
+  final TextEditingController _dateController =TextEditingController();
+  final TextEditingController _timeController =TextEditingController();
+  final GlobalKey<FormState> _formkey =GlobalKey();
+  final TodoController _todoController =TodoController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,18 +26,25 @@ class _CreateTodoViewState extends State<CreateTodoView> {
         title: Text('Create New Todo'),
       ),
       body:Form(
+        key: _formkey,
         child:ListView(
           padding: const EdgeInsets.all(15),
           children: [
         TextFormField(
+          controller: _titleController,
           keyboardType: TextInputType.text,
           textCapitalization: TextCapitalization.sentences,
-          decoration: InputDecoration(label: Text('title'),
-          hintText: 'please input your title here',
+          decoration: InputDecoration(label: Text('Title'),
+          hintText: 'Please input your title here',
           floatingLabelBehavior:FloatingLabelBehavior.never,focusedBorder: UnderlineInputBorder(
             borderSide:BorderSide(color: CostomBlue), 
           ), 
           ),
+          validator: (value){
+            if(value! .isEmpty){
+              return 'Please enter a title';
+            }
+          },
         ),
         SizedBox(height: 15,
         ),
@@ -38,12 +53,17 @@ class _CreateTodoViewState extends State<CreateTodoView> {
           textCapitalization: TextCapitalization.sentences,
           maxLines: 5,
           decoration:InputDecoration(label: Text('Discription'),
-          hintText: 'please enter a discription here',
+          hintText: 'Please enter a description here',
           floatingLabelBehavior:FloatingLabelBehavior.never,
           focusedBorder: UnderlineInputBorder(
             borderSide: BorderSide(color: CostomBlue),
           ),
           ),
+          validator: (value){
+            if(value! .isEmpty){
+              return 'Please enter a description';
+            }
+          },
         ),
         SizedBox(height: 15,),
         Row(
@@ -54,25 +74,41 @@ class _CreateTodoViewState extends State<CreateTodoView> {
                   showDatePicker(context: context,
                    initialDate: DateTime.now(),
                     firstDate:DateTime.now() ,
-                   lastDate: DateTime.now().add(const Duration(days: 365)));
+                   lastDate: DateTime.now().add(const Duration(days: 365))).then((value) {
+                     setState(() {
+                       _dateController.text = DateFormat.yMMMMd().format(value!);
+                     });
+                   });
                 },
+                controller: _dateController,
                 keyboardType: TextInputType.datetime,
                 textCapitalization: TextCapitalization.sentences,
                 maxLines: 1,
                 decoration: InputDecoration(
                   label: Text('Date'),
-                  hintText: 'please select a date',
+                  hintText: 'Please select a date',
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: CostomBlue),
                   )
                 ),
+                validator: (value){
+                  if(value!.isEmpty){
+                    return 'Please enter a date';
+                   } if(value == DateFormat.yMMMMd().format(DateTime.now())){
+                      return 'You selected today\'s date';
+                    }
+                },
               ),
             ),
             SizedBox(width: 20,),
             Expanded(child: TextFormField(
               onTap: (){
-                showTimePicker(context: context, initialTime: TimeOfDay.now());
+                showTimePicker(context: context, initialTime: TimeOfDay.now()).then((value) {
+                  setState(() {
+                    _timeController.text = value! .format(context);
+                  });
+                });
               },
                keyboardType: TextInputType.datetime,
                 textCapitalization: TextCapitalization.sentences,
@@ -85,11 +121,30 @@ class _CreateTodoViewState extends State<CreateTodoView> {
                     borderSide: BorderSide(color: CostomBlue),
             ),
             ),
-            ),
+            validator: (value){
+              if(value!.isEmpty){
+                return 'Please enter a time';
+              }if(value == DateFormat.yMMMMd().format(DateTime.now())){
+                      return 'You selected today\'s time';
+              }
+             }
+              ),
             )],
         ),
         SizedBox(height: 35,),
-        TextButton(onPressed: (){}, child:Text('Create Todo',
+        TextButton(onPressed: ()async{
+          if(_formkey.currentState!.validate()){
+            String dateTime = _dateController.text + " " + _timeController.text;
+
+            //Todo isLoading
+            setState(() {
+              
+            });
+
+            bool isSucessfull = await _todoController.createTodo
+            (Title: _titleController.text, description: _descriptionController.text, dateTime: dateTime);
+          }
+        }, child:Text('Create Todo',
         style: TextStyle(color: Colors.white),
         ),
         style: TextButton .styleFrom(
